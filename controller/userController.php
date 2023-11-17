@@ -26,7 +26,7 @@ class UserController{
                     return;
                 }
             case "POST":
-                $createUser = UserModel::createUser($this->_data);
+                $createUser = UserModel::createUser($this->generateSalting());
                 $json = array(
                     "response:"=>$createUser
                 );
@@ -42,13 +42,13 @@ class UserController{
     }
     private function generateSalting(){
         $trimmed_data="";
-        if(($this->data !="") || (!empty($this->_data))){
-            $trimmed_data = array_map("'trim,' $this->_data");
+        if(($this->_data !="") || (!empty($this->_data))){
+            $trimmed_data = array_map('trim', $this->_data);
             $trimmed_data['use_pss'] = md5($trimmed_data['use_pss']);
             //salting
-            $identifier = str_replace("$","y78",crypt($trimmed_data['use_mail'],'ser3478'));
-            $key = str_replace("$","ERT",crypt($trimmed_data['use_pss'],'$uniempresarial2024'));
-            $trimmed_data['us_identify']=$identifier;
+            $identifier = str_replace("$","y78",crypt($trimmed_data['use_mail'],'$1$aserwtop$'));
+            $key = str_replace("$","ERT",crypt($trimmed_data['use_pss'],'uniempresa$'));
+            $trimmed_data['us_identifier']=$identifier;
             $trimmed_data['us_key']=$key;
             return $trimmed_data;
         }

@@ -18,7 +18,7 @@ class LoginController{
                     $result["mensaje"] = "OK";
                 }else{
                     $result["credencials"]=null;
-                    $result["mensajw"] = "ERROR EN CREDENCIALES";
+                    $result["mensaje"] = "ERROR EN CREDENCIALES";
                     $header = "HTTP/1.1 400 FAIL";
                 }
                 echo json_encode($result, JSON_UNESCAPED_UNICODE);
