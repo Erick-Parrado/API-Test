@@ -34,7 +34,7 @@ class UserController{
                     APIResponse(UserModel::deleteUser($this->_complement));
                     return;
                 default:
-                APIResponse("Route not found");
+                ResponseController::response(404);
             }
         }
         else APIResponse($this->validateData());
@@ -48,7 +48,7 @@ class UserController{
             $pattern = (isset($patterns[$iter->key()]))?$patterns[$iter->key()]:null;
             if(isset($pattern)){
                 $result = preg_match($pattern,$iter->current());
-                if(!$result) return "Error en ".$iter->key();
+                if(!$result) ResponseController::response(101);
             }
             $iter->next();
         }

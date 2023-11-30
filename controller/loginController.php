@@ -11,24 +11,16 @@ class LoginController{
     public function index(){
         switch($this -> _method){
             case 'POST':
-                $credencials = UserModel::login($this->_data);
-                $result = [];
-                if(!empty($credencials)){
-                    $result["credencials"] = $credencials;
-                    $result["mensaje"] = "OK";
+                $credentials = UserModel::login($this->_data);
+                var_dump($credentials);
+                if(!empty($credentials)){
+                    ResponseController::response(501,$credentials);
                 }else{
-                    $result["credencials"]=null;
-                    $result["mensaje"] = "ERROR EN CREDENCIALES";
-                    $header = "HTTP/1.1 400 FAIL";
+                    ResponseController::response(503);
                 }
-                echo json_encode($result, JSON_UNESCAPED_UNICODE);
-                return;
+                break;
             default:
-            $json = array(
-                "ruta:"=>"not found"
-            );
-            echo json_encode($json, true);
-            return;
+            ResponseController::response(404);
         }
     }
 }

@@ -9,7 +9,7 @@ $inputs['raw_input'] = @file_get_contents('php://input');
 $_POST = json_decode($inputs['raw_input'], true);
 //var_dump($rutasArray);
 if (count(array_filter($rutasArray))<2){
-    APIResponse("Route not found");
+    ResponseController::response(404);
 }else{
     /**
      * EndPoint Correctos
@@ -32,12 +32,12 @@ if (count(array_filter($rutasArray))<2){
                 $user = new LoginController($method, $_POST);
                 $user -> index();
             }else{
-                APIResponse("Route not found");
+                ResponseController::response(404);
                 return;
             }
             break;
         default:
-        APIResponse("Route not found");
+        ResponseController::response(404);
         return;
     }
 }

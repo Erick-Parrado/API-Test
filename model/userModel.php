@@ -1,5 +1,6 @@
 <?php
 require_once "Connection.php";
+
 class  UserModel{
     static public function createUser($data){
         $cantMail = self::getMail($data["use_mail"]);
@@ -57,9 +58,9 @@ class  UserModel{
 
         if(!empty($user) && !empty($pass)){
             $query = "SELECT us_identifier, us_key FROM users WHERE use_mail=:use_mail and use_pss=:use_pss and us_status='1';";
-            return self::executeQuery($query,$data);
+            return self::executeQuery($query,$data)->fetchAll(PDO::FETCH_ASSOC);
         }else{
-            return "NO TIENE CREDENCIALES";
+            ResponseController::response(504);
         }
 
     }
@@ -110,14 +111,13 @@ class  UserModel{
 
         if(preg_match('/^SELECT.*$/',$query)){
             $statement -> execute();
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            return $result;
+            return $statement;
         }
         else{
             $message = $statement->execute() ? "Ok" : Connection::doConnection()->errorInfo();
-            return $message;
             $statement-> closeCursor();
             $statement = null;
+            return $message;
         }
         
     }

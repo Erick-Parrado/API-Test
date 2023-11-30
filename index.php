@@ -2,6 +2,7 @@
 require_once "controller/userController.php";
 require_once "controller/routesControllers.php";
 require_once "controller/loginController.php";
+require_once "controller/responseController.php";
 require_once "model/userModel.php";
 
 header('Access-Control-Allow-Headers: Content-Type');
