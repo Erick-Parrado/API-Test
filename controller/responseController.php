@@ -4,10 +4,10 @@ class ResponseController{
 
     static public $response=null;
 
-    static public function response($cod,PDOStatement $statement=null){
+    static public function response($cod,$statement=null){
         switch($cod){
             case 101://Validacion de correo
-                self::setError($cod,'Los campos no cumplen con condiciones mínimas');
+                self::setError($cod,'El campo '.$statement.' no cumple con condiciones mínimas');
                 break;
             case 201://Get Users
                 self::setResult($cod,$statement);
@@ -21,12 +21,18 @@ class ResponseController{
             case 204://Delete User
                 self::setInfo($cod,'Usuario elimindo');
                 break;
+            case 205://Delete User
+                self::setInfo($cod,'Usuario activado');
+                break;
+            case 209: //Usuario no existe
+                self::setError($cod,'Usuario no existe');
+                break;
             case 404:
                 self::setError($cod,'Ruta no encontrada');
                 break;
             case 501:
                 self::setInfo($cod,'OK');
-                self::$response['credentials'] = $statement->fetchAll(PDO::FETCH_ASSOC);
+                self::$response['credentials'] = $statement;
                 break;
             case 503://Error de credenciales
                 self::setError($cod,'ERROR EN CREDENCIALES');
@@ -35,6 +41,9 @@ class ResponseController{
                 break;
             case 504://No credentials
                 self::setError($cod,'NO TIENE CREDENCIALES');
+                break;
+            case 505:
+                self::setError($cod,'NO TIENE ACCESO');
                 break;
         }
         echo json_encode(self::$response,JSON_UNESCAPED_UNICODE);

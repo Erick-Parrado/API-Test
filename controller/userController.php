@@ -25,36 +25,39 @@ class UserController{
                     }
                 case "POST":
                     UserModel::createUser($this->generateSalting());
-                    ResponseController::response(201);
+                    ResponseController::response(202);
                     return;
                 case "PUT":
-                    UserModel::updateUser($this->_complement,$this->generateSalting());
-                    ResponseController::response(203);
+                    ResponseController::response(UserModel::updateUser($this->_complement,$this->generateSalting()));
                     return;
                 case "DELETE":
-                    UserModel::deleteUser($this->_complement);
-                    ResponseController::response(204);
+                    ResponseController::response(UserModel::deleteUser($this->_complement));
+                    return;
+                case "PATCH":
+                    ResponseController::response(UserModel::activeUser($this->_complement));
                     return;
                 default:
-                ResponseController::response(404);
+                    ResponseController::response(404);
             }
         }
     }
 
     private function validateData(){
         $patterns = array("use_mail"=>"/^[a-zA-Z0-9_.]{8,}@gmail.com$/","use_pss"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/");
-        $dataAO = new ArrayObject($this->_data);
-        $iter = $dataAO -> getIterator();
-        while($iter->valid()){
-            $pattern = (isset($patterns[$iter->key()]))?$patterns[$iter->key()]:null;
-            if(isset($pattern)){
-                $result = preg_match($pattern,$iter->current());
-                if(!$result) {
-                    ResponseController::response(101);
-                    return false;
-                };
+        if(is_array($this->_data)){
+            $dataAO = new ArrayObject($this->_data);
+            $iter = $dataAO -> getIterator();
+            while($iter->valid()){
+                $pattern = (isset($patterns[$iter->key()]))?$patterns[$iter->key()]:null;
+                if(isset($pattern)){
+                    $result = preg_match($pattern,$iter->current());
+                    if(!$result) {
+                        ResponseController::response(101,$iter->key());
+                        return false;
+                    };
+                }
+                $iter->next();
             }
-            $iter->next();
         }
         return true;
     }

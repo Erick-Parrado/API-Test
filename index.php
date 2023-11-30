@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Bogota');
+
 require_once "controller/userController.php";
 require_once "controller/routesControllers.php";
 require_once "controller/loginController.php";
@@ -31,15 +33,12 @@ if($endPoint != 'login'){
             $routes -> index();
         }
         else{
-            $result["mensaje"]="NO TIENE ACCESO";
-            echo json_encode($result,true);
+            ResponseController::response(505);
             return;
         }
     }
     else{
-        $result["mensaje"]="ERROR DE CREDENCIALES :v";
-        $result["users"] = UserModel::getUserAuth();
-        echo json_encode($result,true);
+        ResponseController::response(503);
         return;
     }
 }

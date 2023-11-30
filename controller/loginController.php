@@ -19,7 +19,7 @@ class LoginController{
                 }
                 break;
             default:
-            ResponseController::response(404);
+                ResponseController::response(404);
         }
     }
 }
