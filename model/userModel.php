@@ -4,25 +4,13 @@ class  UserModel{
     static public function createUser($data){
         $cantMail = self::getMail($data["use_mail"]);
         if($cantMail<1){
-            //var_export($data);
             $query = "INSERT INTO users(use_mail, use_pss, use_dateCreate, us_identifier, us_key, us_status) VALUES (:use_mail, :use_pss, :use_dateCreate, :us_identifier, :us_key, :us_status);";
-            //echo $query;
-            $status = "1";
-            $statement= Connection::doConnection()->prepare($query);
-            $statement->bindParam(":use_mail", $data["use_mail"],PDO::PARAM_STR);
-            $statement->bindParam(":use_pss", $data["use_pss"],PDO::PARAM_STR);
-            $statement->bindParam(":use_dateCreate", $data["use_dateCreate"],PDO::PARAM_STR);
-            $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
-            $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
-            $statement->bindParam(":us_status", $status,PDO::PARAM_STR);
-            $message = $statement->execute() ? "Ok" : Connection::doConnection()->errorInfo();
-            $statement-> closeCursor();
-            $statement = null;
-            $query = "";
-            }else{
-                $message = "El usuario ya existe";
-            }
+            $data['us_status']=1;
+            self::executeQuery($query,$data);
+        }else{
+            $message = "El usuario ya existe";
             return $message;
+        }
     }
     static private function getMail($mail){
         $query = "SELECT use_mail FROM users WHERE use_mail='$mail'";
@@ -36,12 +24,7 @@ class  UserModel{
         $query ="SELECT user_id, use_mail, use_dateCreate FROM users ";
         $query .= ($param > 0) ? "WHERE users.user_id = '$param' AND ": "";
         $query .= ($param > 0) ? "us_status='1';" : "WHERE us_status='1';";
-       // echo $query;
-        $statement = Connection::doConnection()->prepare($query);
-        $statement -> execute();
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-
+        return self::executeQuery($query);
     }
 
     static public function updateUser($user_id,$data){
@@ -49,7 +32,7 @@ class  UserModel{
         $dataAO = new ArrayObject($data);
         $iter = $dataAO->getIterator();
         while($iter->valid()){
-            $query .= $iter->key()."='".$iter->current()."'";
+            $query .= $iter->key()."=:".$iter->key();
             $iter->next();
             if($iter->valid()){
                 $query .= ",";
@@ -58,36 +41,23 @@ class  UserModel{
                 $query .= " WHERE user_id = '".$user_id."'";
             }
         }
-        $statement= Connection::doConnection()->prepare($query);
-        $message = $statement->execute() ? "Ok" : Connection::doConnection()->errorInfo();
-        $statement-> closeCursor();
-        $statement = null;
-        $query = "";
-        return $message;
+        return self::executeQuery($query,$data);
     }
 
     static public function deleteUser($user_id){
         $query = "UPDATE users SET us_status = '0' WHERE user_id = ".$user_id;
         $statement= Connection::doConnection()->prepare($query);
-        $message = $statement->execute() ? "Usuario ".$user_id." eliminado" : Connection::doConnection()->errorInfo();
-        $statement-> closeCursor();
-        $statement = null;
-        $query = "";
-        return $message;
+        return self::executeQuery($query);
     }
 
     static public function login($data){
         $user = $data['use_mail'];
         $pass = md5($data['use_pss']);
+        $data['use_pss'] = $pass;
 
         if(!empty($user) && !empty($pass)){
-            $query = "SELECT us_identifier, us_key FROM users WHERE
-            use_mail='$user' and use_pss='$pass' and us_status='1'";
-            $statement = Connection::doConnection()->prepare($query);
-            $statement -> execute();
-            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-            //var_dump("'$user'+'$pass'");
-            return $result;
+            $query = "SELECT us_identifier, us_key FROM users WHERE use_mail=:use_mail and use_pss=:use_pss and us_status='1';";
+            return self::executeQuery($query,$data);
         }else{
             return "NO TIENE CREDENCIALES";
         }
@@ -102,7 +72,55 @@ class  UserModel{
         return $result;
     }
 
+    static public function  executeQuery($query,$data=null){
+        $fields = array("user_id","use_mail","use_pss","use_dateCreate","us_identifier","us_key","us_status");
+        $statement= Connection::doConnection()->prepare($query);
+        if(isset($data)){
+            foreach(array_keys($fields) as $index){
+                $pattern = '/^.*:'.$fields[$index].'.*$/';
+                $result = (preg_match($pattern,$query));
+    
+                if(!$result) continue;
+    
+                switch($index){
+                    case 0:
+                        $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_STR);
+                        break;
+                    case 1:
+                        $statement->bindParam(":use_mail", $data["use_mail"],PDO::PARAM_STR);
+                        break;
+                    case 2:
+                        $statement->bindParam(":use_pss", $data["use_pss"],PDO::PARAM_STR);
+                        break;
+                    case 3:
+                        $statement->bindParam(":use_dateCreate", $data["use_dateCreate"],PDO::PARAM_STR);
+                        break;
+                    case 4:
+                        $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
+                        break;
+                    case 5:
+                        $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
+                        break;
+                    case 6:
+                        $statement->bindParam(":us_status", $data["us_status"],PDO::PARAM_STR);
+                        break;
+                }
+            }
+        }
 
+        if(preg_match('/^SELECT.*$/',$query)){
+            $statement -> execute();
+            $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        else{
+            $message = $statement->execute() ? "Ok" : Connection::doConnection()->errorInfo();
+            return $message;
+            $statement-> closeCursor();
+            $statement = null;
+        }
+        
+    }
 }
 
 ?>

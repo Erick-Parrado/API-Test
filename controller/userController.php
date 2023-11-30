@@ -45,7 +45,7 @@ class UserController{
         $dataAO = new ArrayObject($this->_data);
         $iter = $dataAO -> getIterator();
         while($iter->valid()){
-            $pattern = $patterns[$iter->key()];
+            $pattern = (isset($patterns[$iter->key()]))?$patterns[$iter->key()]:null;
             if(isset($pattern)){
                 $result = preg_match($pattern,$iter->current());
                 if(!$result) return "Error en ".$iter->key();
