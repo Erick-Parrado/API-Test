@@ -1,5 +1,4 @@
 <?php
-require_once "general/APIResponse.php";
 
 class UserController{
     private $_method; //get,post, put
@@ -13,31 +12,33 @@ class UserController{
     }
 
     public function index(){
-        if($this->validateData()!=true){
+        if($this->validateData()){
             switch ($this->_method){
                 case "GET":
                     switch ($this->_complement){
                         case 0: 
-                            APIResponse(UserModel::getUsers(0));
+                            ResponseController::response(201,UserModel::getUsers(0));
                             return;
                         default:
-                            APIResponse(UserModel::getUsers($this->_complement));
+                            ResponseController::response(201,UserModel::getUsers($this->_complement));
                             return;
                     }
                 case "POST":
-                    APIResponse(UserModel::createUser($this->generateSalting()));
+                    UserModel::createUser($this->generateSalting());
+                    ResponseController::response(201);
                     return;
                 case "PUT":
-                    APIResponse(UserModel::updateUser($this->_complement,$this->generateSalting()));
+                    UserModel::updateUser($this->_complement,$this->generateSalting());
+                    ResponseController::response(203);
                     return;
                 case "DELETE":
-                    APIResponse(UserModel::deleteUser($this->_complement));
+                    UserModel::deleteUser($this->_complement);
+                    ResponseController::response(204);
                     return;
                 default:
                 ResponseController::response(404);
             }
         }
-        else APIResponse($this->validateData());
     }
 
     private function validateData(){
@@ -48,11 +49,14 @@ class UserController{
             $pattern = (isset($patterns[$iter->key()]))?$patterns[$iter->key()]:null;
             if(isset($pattern)){
                 $result = preg_match($pattern,$iter->current());
-                if(!$result) ResponseController::response(101);
+                if(!$result) {
+                    ResponseController::response(101);
+                    return false;
+                };
             }
             $iter->next();
         }
-        return;
+        return true;
     }
 
 

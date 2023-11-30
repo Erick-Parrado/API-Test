@@ -58,7 +58,7 @@ class  UserModel{
 
         if(!empty($user) && !empty($pass)){
             $query = "SELECT us_identifier, us_key FROM users WHERE use_mail=:use_mail and use_pss=:use_pss and us_status='1';";
-            return self::executeQuery($query,$data)->fetchAll(PDO::FETCH_ASSOC);
+            return self::executeQuery($query,$data);
         }else{
             ResponseController::response(504);
         }

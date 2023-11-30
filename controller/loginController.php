@@ -12,7 +12,6 @@ class LoginController{
         switch($this -> _method){
             case 'POST':
                 $credentials = UserModel::login($this->_data);
-                var_dump($credentials);
                 if(!empty($credentials)){
                     ResponseController::response(501,$credentials);
                 }else{

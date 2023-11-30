@@ -10,9 +10,17 @@ class ResponseController{
                 self::setError($cod,'Los campos no cumplen con condiciones mínimas');
                 break;
             case 201://Get Users
+                self::setResult($cod,$statement);
+                break;
             case 202://Create User
+                self::setInfo($cod,'Usuario creado');
+                break;
             case 203://Update User
+                self::setInfo($cod,'Usuario actualizado');
+                break;
             case 204://Delete User
+                self::setInfo($cod,'Usuario elimindo');
+                break;
             case 404:
                 self::setError($cod,'Ruta no encontrada');
                 break;
@@ -40,6 +48,13 @@ class ResponseController{
     static private function setError($status,$message){
         self::$response['error']['status']=$status;
         self::$response['error']['message']=$message;
+    }
+    
+    static private function setResult($status,$statement){
+        self::$response['info']['status']=$status;
+        self::$response['info']['count']=$statement->rowCount();
+        self::$response['response']=$statement->fetchAll();
+
     }
 }
 
