@@ -9,9 +9,9 @@ class  UserModel{
             $query = "INSERT INTO users(use_mail, use_pss, use_dateCreate, us_identifier, us_key, us_status) VALUES (:use_mail, :use_pss, :use_dateCreate, :us_identifier, :us_key, :us_status);";
             $data['us_status']=1;
             self::executeQuery($query,$data);
+            return 202;
         }else{
-            $message = "El usuario ya existe";
-            return $message;
+            return 208;
         }
     }
     static private function getMail($mail){

@@ -24,6 +24,9 @@ class ResponseController{
             case 205://Delete User
                 self::setInfo($cod,'Usuario activado');
                 break;
+            case 208: //Usuario no existe
+                self::setError($cod,'Usuario ya existe');
+                break;
             case 209: //Usuario no existe
                 self::setError($cod,'Usuario no existe');
                 break;

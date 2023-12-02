@@ -24,8 +24,7 @@ class UserController{
                             return;
                     }
                 case "POST":
-                    UserModel::createUser($this->generateSalting());
-                    ResponseController::response(202);
+                    ResponseController::response(UserModel::createUser($this->generateSalting()));
                     return;
                 case "PUT":
                     ResponseController::response(UserModel::updateUser($this->_complement,$this->generateSalting()));
