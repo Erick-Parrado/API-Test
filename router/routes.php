@@ -37,7 +37,7 @@ if (count(array_filter($rutasArray))<2){
             }
             break;
         default:
-        ResponseController::response(404);
+            ResponseController::response(404);
         return;
     }
 }
